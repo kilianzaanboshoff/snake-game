@@ -2,15 +2,18 @@
 const board = document.getElementById('game-board');
 const instructionText = document.getElementById('instruction-text');
 const logo = document.getElementById('logo');
+const score = document.getElementById('scores');
+const highScoreText = document.getElementById('highScore');
 
 // Define game variables
 let gridSize = 20;
 let snake = [{x: 10, y: 10}];
 let food = generateFood();
-let direction ='up';
+let direction ='right';
 let GameInterval;
 let gameSpeedDelay = 200;
 let gameStarted = false;
+let highScore = 0;
 
 
 
@@ -20,6 +23,7 @@ function draw() {
     board.innerHTML = ''; //Every time we draw, we clear the board
     drawSnake();
     drawFood();
+    updateScore();
 }
 
 // Draw snake
@@ -53,11 +57,12 @@ function setPosition(element, position){
 
 // Draw food function
 function drawFood () {
+    if (gameStarted) {
     const foodElement = createGameElement('div', 'food');
     setPosition(foodElement, food);
     board.appendChild(foodElement);
 }
-
+}
 // Generate food function
 function generateFood() {
     const x = Math.floor(Math.random() * gridSize)+ 1;
@@ -185,13 +190,38 @@ function checkCollision() {
 }
 
 function resetGame() {
+    updateHighScore();
+    stopGame();
     snake = [{x: 10, y: 10}];
     food = generateFood();
-    direction ='up';
+    direction ='right';
     gameSpeedDelay = 200;
+    updateScore ();
     clearInterval(GameInterval);
     gameStarted = false;
     instructionText.style.display = 'block';
     logo.style.display = 'block';
     draw();
+}
+
+function updateScore () {
+    const CurrentScore = snake.length - 1; //Since snake score starts at 1, we are subtracting 1 from the length of the snake array
+    score.textContent = CurrentScore.toString().padStart(3, '0'); //We are converting the score to a string and padding it with 0
+}
+
+function stopGame() {
+    clearInterval(GameInterval);
+    gameStarted = false;
+    instructionText.style.display = 'block';
+    logo.style.display = 'block';
+}
+
+function updateHighScore () {
+    const CurrentScore = snake.length - 1; //Since snake score starts at 1, we are subtracting 1 from the length of the snake array
+    if (CurrentScore > highScore) {
+        highScore = CurrentScore;
+        highScoreText.textContent = highScore.toString().padStart(3, '0'); //We are converting the score to a string and padding it with 0
+
+    }
+    highScoreText.style.display = 'block';
 }
